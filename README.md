@@ -1,47 +1,71 @@
-# CoolCode browser tool template
+# Renewal Bench
 
-A starting point for independent tools at `coolcode.ca/<repo>/`: a working local-text
-example, responsive UI, Python standard-library build, Node tests, PR checks and Pages
-publication. No npm install is needed.
-
-## Using the example
+[Open Renewal Bench](https://coolcode.ca/renewalbench/) — a private Canadian fixed-rate mortgage renewal workspace. Enter up to eight written offers and compare payments, interest, fees and debt remaining on the **same date**. There are no live lender rates, accounts, API keys, data collectors or scheduled refreshes.
 
 <!-- coolcode:guide -->
-The first occurrence of each trimmed line keeps its place. Compare the output with the original text before copying the result.
+Compare written fixed-rate offers over a period no longer than the shortest term. The editable example compares a $400,000 mortgage over 36 months, with different rates and upfront fees; those offers are invented. Include your own fees and lender-quoted penalties, then inspect both borrowing cost and the amount owing. Dated lump sums apply to every offer; recurring extras and contract limits are set per offer. Save deliberately on your device or export a private JSON workspace, schedule CSV and text report.
 <!-- /coolcode:guide -->
 
-For a real tool, replace this paragraph with one or two plain-text sentences
-about an example, a limit or how to interpret the results. Keep the source,
-coverage, refresh behaviour and a worked example in this README as appropriate.
-When updating a tool, revise any details its behaviour has changed and keep the
-homepage's shorter data-source sentence in `tool.json` accurate.
-The hub imports the marked note into the catalogue README.
+## Use your own offers
 
-## One-time template setup
+1. Enter the starting balance, renewal/advance date, remaining amortization in months, and common comparison horizon. For example, 240 months means 20 years. A 36-month and 60-month offer can both be compared for 36 months; this does **not** value the following 24 months or imply the longer contract ends then.
+2. Replace the invented offer names, nominal annual fixed rates, term lengths and payment frequencies. Add or duplicate offers as needed. All dollars are CAD.
+3. Open **Fees, extra payments & contract notes**. Enter upfront fees, financed fees, retained cashback, and any lender-quoted penalty/clawback. Zero means no amount is included, not that the lender confirmed no charge. Record quote dates/expiry and conditions in notes.
+4. Optionally enter a quoted base payment, excluding tax/insurance and recurring extras. Otherwise the tool calculates a base payment. Add recurring extras per offer, or dated lump sums shared across every offer.
+5. Enter the actual annual lump-sum dollar allowance and recurring increase percentage if known. Blank means unknown; zero permits none. The checks only compare amounts, not every contractual restriction. The app never guesses a lender's interest-rate differential or a future renewal rate.
+6. Compare, review warnings, and open **Payment schedule**. Editing any input invalidates the displayed results until you recalculate.
+7. Save explicitly in this browser, or export JSON to reopen elsewhere. CSV contains the selected offer's event schedule; the text report contains all comparison results and assumptions. Files contain personal financial inputs: choose where you share them.
 
-Enable **Settings → General → Template repository** here. This repository does not
-need Pages enabled: its workflow builds/tests but intentionally skips deployment.
-New copies also skip deployment until `scripts/init.py` sets the tool ID to match
-their repository name. This lets you create the repo before configuring Pages.
+## Calculation convention
 
-## Start a new tool
+This model covers nominal annual **fixed** rates compounded twice annually. It does not model variable rates or determine qualification.
 
-1. Select **Use this template → Create a new repository**, choose owner `jsdyer`,
-   a unique lowercase name such as `my-tool`, and public visibility.
-2. Clone the new repository. Use Python 3.12+ and Node 24+.
-3. Set the identity, using a slug that matches the repository name:
+For annual rate `j` as a decimal and `f` payments per year, the equivalent period rate is `(1 + j/2)^(2/f) - 1`. A monthly annuity uses the entered remaining amortization and rounds to cents. Payment amounts follow FCAC's published frequency conversions, with final cent rounding:
 
-```sh
-python3 scripts/init.py my-tool --title "My Tool" --description "Describe what this tool does."
-```
+| Frequency | Base amount | Dates in this model |
+| --- | --- | --- |
+| Monthly | Monthly annuity | Monthly start-date anniversaries |
+| Twice monthly | Monthly ÷ 2 | Midpoint, then next monthly anniversary |
+| Every two weeks | Monthly × 12 ÷ 26 | Every 14 days |
+| Weekly | Monthly × 12 ÷ 52 | Every 7 days |
+| Accelerated every two weeks | Monthly ÷ 2 | Every 14 days |
+| Accelerated weekly | Monthly ÷ 4 | Every 7 days |
 
-Review the category, tags and icon in `tool.json`. `access: "browser"` tells the main
-catalogue that the tool works immediately without installation. `--owner` supports a different
-GitHub owner, but only projects owned by `jsdyer` inherit the CoolCode domain.
+A quoted base payment overrides the amount calculation. Monthly anniversaries preserve month-end starts; other days clamp in short months. Twice-monthly midpoint dates round down to a day. First payments occur after the start date. Weekly calendars may include 53 dates in a year, or 27 biweekly dates. Business-day shifts, irregular first periods and arbitrary lender debit calendars are not implemented; compare the schedule to the actual lender offer.
 
-4. Replace the example in `web/` and its tests. Update the privacy explanation,
-   source attribution and README to describe the real tool.
-5. Test and preview:
+Between regular dates, interest compounds proportionally to the elapsed days in that scheduled period. For example, a lump sum halfway between monthly dates uses half the equivalent monthly growth exponent before and after that event. Money is held as integer cents; accrued interest rounds at **every cash event** and the comparison end. This explicit estimate convention can differ from lender daily-accrual, capitalization and rounding rules. A non-payment comparison end includes its accrued interest.
+
+On the same day, regular payment applies first, then recurring extra, then lump sums. Payments are capped at the debt remaining; no interest accrues after payoff. If the debt grows or an entered payment fails to cover accrued interest, the app warns. Over-limit planned prepayments remain in the model and produce warnings; they are not silently reduced to a contractual cap. Requested lumps after payoff are not spent.
+
+Upfront fees and the entered penalty are paid at the start. Financed fees increase debt and therefore interest. Retained cashback is received at the start. Additional unknown penalties, cashback clawbacks, taxes, insurance, investment returns, discounting/time value of money and switching expenses not entered are excluded.
+
+- **Borrowing cost** = interest + upfront fees + financed fees + entered penalty − cashback kept.
+- **Net cash outlay** = actual mortgage payments (including extras/lumps) + upfront fees + entered penalty − cashback kept.
+- Accounting check: cash outlay + amount owing − original starting balance = borrowing cost.
+
+The lump cap resets on each loan anniversary, not January 1. A lender may instead use a calendar year, original balance percentages, particular dates, minimums, a limited number of payments, or approval rules. Those are recorded in notes and require review. A small cost difference may be outweighed by portability, contract restrictions or other excluded factors. These are estimates, not a recommendation to accept an offer.
+
+## Sources and validation
+
+Method reviewed **2026-11-25** against these primary sources. The date is a method review, not a quote date or a claim that market rates were updated:
+
+- [FCAC: choosing a mortgage — terms, frequency conversions, cashback and flexibility](https://www.canada.ca/en/financial-consumer-agency/services/mortgages/choose-mortgage.html)
+- [FCAC: fixed mortgage information-box example — compounding and required disclosures](https://www.canada.ca/en/financial-consumer-agency/services/industry/bulletins/information-box-examples/credit-agreement-fixed-mortgage.html)
+- [FCAC: prepayment privileges and penalties](https://www.canada.ca/en/financial-consumer-agency/services/mortgages/reduce-prepayment-penalties.html)
+- [FCAC: renewing your mortgage](https://www.canada.ca/en/financial-consumer-agency/services/mortgages/renew-mortgage.html)
+- [FCAC mortgage calculator](https://itools-ioutils.fcac-acfc.gc.ca/MC-CH/MC-CH-eng.aspx?lang=eng)
+
+The model regression tests include the familiar $100,000 / 5% / 25-year monthly payment of $581.60. Independent present-value summation, monthly closed-form balances and daily accumulation check the implementation separately from its event loop. Tests cover frequency conversions, leap/month-end dates, partial final periods, equal horizons, lump timing/order, fees, limits, underpayment, capped payoff, safe exports, and adding offers beyond the example count. The FCAC information-box example also includes payment elements such as possible property tax; this app does not claim to reproduce that example's displayed all-in payment.
+
+## Privacy and storage
+
+Quote inputs and imported files remain in tab memory until **Save on this device**. Explicit local storage uses `coolcode:renewalbench:workspace`. Load does not change the saved file; Forget saved removes that key without clearing the active tab. There is no automatic save, cloud account or third-party financial API. JSON imports must have schema `coolcode.renewalbench.v1`, valid known fields and be smaller than 1 MB. Limits are eight offers, 200 dated lumps, 480 amortization months and 120 comparison months. These are browser model bounds, not lending eligibility rules.
+
+The built page fetches its bundled invented example. The shared CoolCode metrics script records aggregate tool opens by tool ID only; quote inputs and URL parameters are excluded. Source/help links leave the site only when opened. All user strings render as text, never HTML. CSV cells that could trigger spreadsheet formulas are escaped. Downloads are generated locally; no upload endpoint exists.
+
+## Develop and publish
+
+No npm install or production dependency is needed. Use Node 24+ and Python 3.12+:
 
 ```sh
 node --test tests/*.test.mjs
@@ -50,130 +74,19 @@ python3 scripts/build.py
 python3 -m http.server 8000 --directory dist
 ```
 
-Open `http://localhost:8000/`. The example trims lines, skips blanks and removes exact
-duplicates, preserving first-seen order and capitalization. It processes the text in tab memory. Update that explanation if your app behaves differently.
-
-CI also tests the browser flow and mobile layout at a project subpath. Replace the
-sample assertions in `tests/browser_smoke.py` when implementing your own UI. To run
-that check locally (optional for ordinary preview):
+Browser tests use Playwright as a test-only dependency. On Ubuntu with Google Chrome installed:
 
 ```sh
-python3 -m venv .venv
-. .venv/bin/activate
 python3 -m pip install -r tests/browser-requirements.txt
-python3 -m playwright install --with-deps chromium
-python3 tests/browser_smoke.py
+CHROMIUM_PATH="$(command -v google-chrome)" python3 tests/browser_smoke.py
 ```
 
-Playwright is a test-only dependency; the app and its static build do not use it.
+CI uses `ubuntu-24.04` and the runner's Google Chrome, checks desktop/mobile flows at a project subpath, and uploads screenshots. PRs check and build. Successful `main` builds deploy via GitHub Pages; set **Settings → Pages → Source → GitHub Actions**. Deploy only `dist/`; do not commit it or add a CNAME. Keep relative assets for `/renewalbench/`.
 
 ## Expand or customize
 
-Every implemented tool should replace this section with its actual configuration
-path and a working example. A small `config.json` can hold default entities,
-query presets, source choices and request limits. Those defaults should be useful
-starting points, while visitors can enter other valid inputs whenever the source
-supports them. Keep provider limits explicit and separate from the starter list.
+The editable starting scenario is `web/data/example.json`. Change its balance, dates, fees or `quotes` array while preserving the schema. For example, add a third quote object with its own name, rate, term and fee fields; quote counts and validation follow the actual input and do not require two offers. Values are invented examples and must remain labelled as such. Visitors can enter unrelated offers, save their own workspace, or import a valid JSON file without changing the repository.
 
-Derive counts, filters and item validation from the current data. Do not require
-exactly the initial number of items. Add a test that expands the configuration,
-and keep historical captures readable when their coverage differs from today's
-watchlist. Display the selected capture date accurately.
+Payment formulas, bounds and calendar conventions live in `web/model.mjs`; UI bindings live in `web/app.mjs`. If a new convention is added, keep it explicit in saved inputs, schedules, reports, tests and this README rather than changing a result silently. Add a model test and a browser flow for any new feature. Run the commands above, commit and push to `main`; there is no data-fetch workflow to run and no API key/secret to set.
 
-Document which changes need only a normal code push and which also need a data
-refresh. Include the refresh command or exact GitHub workflow and input, followed
-by the publication step. A successful code build need not mean a new collection
-has been fetched. The starter itself has no external collection or refresh.
-
-## Publish and register
-
-When the actual tool is ready, in the **new tool repository** set **Settings → Pages → Build and deployment →
-Source → GitHub Actions**. Push to `main`, or manually run **Browser tool · Check and
-publish** after enabling Pages. If the initial deployment ran before Pages was enabled,
-enable it and rerun. PRs only check/build and provide a downloadable preview artifact.
-
-Keep `{{VISIT_COUNTER}}` in the page head and `{{ISSUE_LINK}}` in the footer when replacing the starter UI. The build enables these for initialized CoolCode repositories. The shared counter records aggregate opens on coolcode.ca by public tool ID. Toolbox inputs and URL parameters are excluded. The issue link opens a reporting form with the tool already selected.
-
-Keep app-owned asset paths and module imports relative. Check `https://coolcode.ca/my-tool/`.
-Do not add a CNAME or set `coolcode.ca` as this project's custom domain; the account
-site supplies it. Only successful `main` builds deploy.
-
-After verifying the app, copy the reviewed object from `tool.json` into `data/tools.json`
-in [the main site](https://github.com/jsdyer/jsdyer.github.io). Each tool still builds
-independently. The hub generates the visitor Worker ID list, watchdog targets and sitemap; deploy and verify the affected services before considering the release complete. Update the hub record when listing metadata changes; the hub is the
-authority for discovery. Every change must follow the [mandatory lifecycle](https://github.com/jsdyer/jsdyer.github.io/blob/main/docs/tool-lifecycle.md). App-only changes may leave integrations unchanged, but this must be checked; documentation, source fields, schedules and registration changes also require the hub update.
-
-The main site separates **Use in your browser** from **Install yourself**. An app
-that asks for a file is still a browser tool. Standalone Linux packages should start
-in their own repositories with their own build/release workflow, rather than copying
-this browser-only scaffold. Their hub record uses `access: "install"`, links to an
-installation guide, and includes `requirements`.
-
-## Files
-
-| Path | Purpose |
-| --- | --- |
-| `tool.json` | Page metadata and a ready-to-copy catalogue record |
-| `web/` | HTML, responsive CSS, DOM interactions and separate model logic |
-| `scripts/build.py` | Escape metadata and build `web/` into `dist/` |
-| `scripts/init.py` | Set a new project's identity |
-| `scripts/add_schedule_guard.py` | Add an opt-in guard for explicitly selected scheduled collectors |
-| `tests/` | Application and builder tests |
-| `.github/workflows/pages.yml` | Check PRs and publish successful main builds |
-| `AGENTS.md` | Instructions for future coding work |
-
-Namespace optional storage as `coolcode:<tool-id>:<key>`; CoolCode paths share a
-browser origin. Don't save pasted text/uploads by default. Document external APIs
-and send only the information needed for the selected action. Never embed secrets.
-
-Scheduled refresh is opt-in. Validate source data before deploying, display its date,
-and preserve the last good deployment on failure. Public-repository schedules can
-stop after 60 days without repository activity.
-
-When adding a collector with `on.schedule`, also keep `workflow_dispatch` available
-for the independent Linux server scheduler. Generate a separate schedule guard,
-listing every scheduled collector in the repository:
-
-```sh
-python3 scripts/add_schedule_guard.py --repository jsdyer/my-tool .github/workflows/pages.yml
-```
-
-Replace the repository and workflow paths with the real values. Review the generated
-allowlist, commit `.github/workflows/schedule-guard.yml`, and verify its first push
-run. Re-run the command with the complete list when adding, renaming or removing a
-collector. The guard runs weekly, independently of collector failures, and calls
-GitHub's enable-workflow API for those paths and itself. It restores workflows
-disabled for inactivity and preserves manually disabled workflows. It does not
-fetch data, create dummy commits or change source/check timestamps.
-
-This is an interim mitigation: GitHub does not document active-workflow renewal as
-a permanent exemption, and scheduled runs can be delayed or dropped. Register the
-collector and its freshness expectations in the independent server scheduler too.
-Document its real data check, collection and publication steps in the tool README.
-The starter has no scheduled collector and therefore ships no recurring guard job.
-
-Templates don't propagate future edits automatically. Adopt fixes explicitly and
-consider a versioned reusable workflow once several tools confirm the shared process.
-Choose and add the intended software license before distributing a new project.
-
-## Search metadata
-
-Initialize the page title with a concise task phrase, while keeping the creative
-app name in `--title`:
-
-```sh
-python3 scripts/init.py line-cleaner --title "Line Cleaner" --description "Trim lines and remove exact duplicates in your browser." --search-title "Trim Lines & Remove Duplicates"
-```
-
-The build adds static `WebApplication` JSON-LD, a free CAD offer and social metadata.
-For initialized jsdyer tools it also adds the canonical CoolCode URL. Forks and the
-uninitialized template do not claim a CoolCode canonical. Review the application
-category in `scripts/build.py` when adapting the tool; the starter is a utility.
-Do not invent ratings or reviews. Search markup does not guarantee a rich result.
-
-For a saved public dataset, pass Dataset objects to `add_search_metadata` from the
-app builder, with actual source attribution, licence, coverage and download URLs.
-Derive counts and dates from the same snapshot used by the app and show those details
-on the page. Keep source edition, retrieval and page-build time distinct. Omit an
-unknown source modification date instead of setting it to the current build time.
-Read the hub's `docs/search-discovery.md` for the release checklist.
+For release, the hub imports `tool.json` and the marked guide, regenerates its homepage/README, Worker registration and sitemap, and reconciles repository audit and live-page probes. Follow the [CoolCode lifecycle](https://github.com/jsdyer/jsdyer.github.io/blob/main/docs/tool-lifecycle.md). There is **no collector or freshness schedule** to register with the watchdog for this app; its ordinary public-page probe still belongs in hub integration. Template helper scripts remain for future maintenance but are not active scheduled jobs.

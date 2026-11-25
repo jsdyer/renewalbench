@@ -1,0 +1,12 @@
+{
+  "schema": "coolcode.renewalbench.v1",
+  "startDate": "2027-01-01",
+  "principal": "400000.00",
+  "amortizationMonths": 240,
+  "horizonMonths": 36,
+  "quotes": [
+    {"name":"Example A — fewer fees","annualRate":4.39,"termMonths":36,"frequency":"monthly","upfrontFees":"500","financedFees":"0","cashback":"0","penalty":"0","extraPayment":"0","customPayment":"","annualLumpLimit":"","extraPercentLimit":"","notes":"Invented example. Replace with a written lender quote."},
+    {"name":"Example B — lower rate","annualRate":4.19,"termMonths":60,"frequency":"monthly","upfrontFees":"2500","financedFees":"0","cashback":"0","penalty":"0","extraPayment":"0","customPayment":"","annualLumpLimit":"","extraPercentLimit":"","notes":"Invented example. Both offers are compared for only 36 months; the 60-month contract still continues afterwards."}
+  ],
+  "lumps": []
+}

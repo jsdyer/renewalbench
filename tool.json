@@ -1,16 +1,23 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "renewalbench",
+  "title": "Renewal Bench",
+  "description": "Compare Canadian mortgage renewal quotes, payment schedules and prepayments over the same period.",
+  "category": "money",
+  "tags": [
+    "mortgage",
+    "renewal",
+    "Canada",
+    "amortization",
+    "prepayment",
+    "calculator"
+  ],
+  "icon": "wallet",
+  "url": "/renewalbench/",
+  "source": "https://github.com/jsdyer/renewalbench",
   "hosting": "project",
   "access": "browser",
   "data_info": {
     "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "detail": "Your entered fixed-rate mortgage quotes, fees and prepayment plans are calculated privately in the browser. No live lender offers or API keys are used."
   }
 }

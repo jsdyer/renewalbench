@@ -49,3 +49,14 @@
   the application name on the page. Retain the build-time search metadata helper,
   choose an accurate app category, and derive any Dataset metadata from real inputs.
   Never substitute a build timestamp for a source edition or fabricate ratings.
+
+## Renewal Bench model invariants
+
+- This app has no live lender rates, API secrets or scheduled data collector.
+- Never extend a quote rate beyond its term without a separately explicit future-rate scenario.
+- Keep the common horizon, integer-cent event rounding, Canadian semiannual convention,
+  monthly-based frequency conversions, loan-anniversary caps and dated-event order explicit.
+- Lender-specific calendars, prepayment restrictions and penalties are not universal. Never
+  fabricate an IRD or claim estimates reproduce an actual statement. Preserve independent
+  reference-model tests and accounting identities when changing financial calculations.
+- Preserve private in-memory defaults and deliberate local-save behaviour.
