@@ -90,7 +90,9 @@ def main():
                 page.set_viewport_size({'width': 390, 'height': 844})
                 for view in ['schedule', 'method', 'compare']:
                     page.locator(f'[data-view={view}]').click()
-                    assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), view
+                    page.screenshot(path=str(screenshots / f'mobile-{view}.png'), full_page=True)
+                    overflow = page.evaluate("[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,id:e.id,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right})).slice(0,20)")
+                    assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), (view, overflow)
                 page.screenshot(path=str(screenshots / 'mobile.png'), full_page=True)
                 assert not errors, errors
                 browser.close()
