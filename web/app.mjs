@@ -112,4 +112,9 @@ $('#export').addEventListener('click',()=>storageAction(()=>{download('renewalbe
 $('#import').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>1000000)throw new Error('Use a workspace JSON file smaller than 1 MB.');const w=normalizeWorkspace(JSON.parse(await file.text()));write(w);showView('compare');$('#storage-status').textContent='Workspace imported. Nothing was saved automatically.';}catch(err){$('#storage-status').textContent=`Import rejected: ${err.message} Your current workspace is unchanged.`;}finally{e.target.value='';}});
 $('#report').addEventListener('click',()=>{if(comparison)download('renewalbench-report.txt','text/plain;charset=utf-8',reportText(read(),comparison));});
 $('#example').addEventListener('click',()=>{if(example){write(structuredClone(example));showView('compare');$('#storage-status').textContent='Invented example restored in this tab. Saved workspace unchanged.';}});
-try {const r=await fetch('./data/example.json');if(!r.ok)throw new Error('Example could not load.');example=normalizeWorkspace(await r.json());write(structuredClone(example));calculate();}catch(e){$('#status').textContent=`Could not initialize: ${e.message} Reload to retry.`;$('#status').className='error';}
+try {const r=await fetch('./data/example.json');if(!r.ok)throw new Error('Example could not load.');example=normalizeWorkspace(await r.json());
+if (document.body.dataset.useCase === 'monthly-prepayments') {
+  const baseline = {...example.quotes[0], name:'Regular monthly payments', upfrontFees:'0'};
+  example.quotes = [baseline, {...baseline, name:'Extra $100 per month', extraPayment:'100'}];
+}
+write(structuredClone(example));calculate();}catch(e){$('#status').textContent=`Could not initialize: ${e.message} Reload to retry.`;$('#status').className='error';}

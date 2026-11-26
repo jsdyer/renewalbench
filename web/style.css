@@ -8,3 +8,8 @@ input,select,textarea,.table-wrap{max-width:100%}
 @media(max-width:700px){.schedule-controls select{width:100%;min-width:0}.tabs{gap:12px}.tabs button{flex-shrink:0}.file-button{max-width:100%}}
 
 .rate-scenarios{margin:28px 0;padding:26px}.rate-scenarios h2{font-family:Georgia,serif}.rate-scenarios p{line-height:1.6}.rate-scenarios .summary{margin:20px 0}.rate-scenarios .summary strong{display:block}.rate-scenarios summary{cursor:pointer}.rate-scenarios input{width:100%;min-width:0}@media(max-width:600px){.rate-scenarios{padding:18px}}
+
+.task-links { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; margin-block: .85rem; }
+.task-links a { color: inherit; text-decoration: underline; text-underline-offset: .18em; font: inherit; }
+.task-links a:first-child { font-weight: bold; }
+h1 { overflow-wrap: anywhere; }

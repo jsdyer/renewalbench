@@ -100,6 +100,14 @@ def main():
                     assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), (view, overflow)
                 page.screenshot(path=str(screenshots / 'mobile.png'), full_page=True)
                 assert not errors, errors
+                # Exercise the direct search landing page in a fresh browser context.
+                case_page = browser.new_page(viewport={'width': 390, 'height': 844})
+                case_page.route('https://**/*', lambda route: route.abort())
+                case_page.goto(f'http://127.0.0.1:{server.server_port}/renewalbench/monthly-prepayments.html')
+                case_page.wait_for_function("() => {const q=s=>document.querySelector(s);return q('#result-summary').textContent.trim().length > 0 && [...q('#quotes').querySelectorAll('input')].some(i=>i.value==='Extra $100 per month');}")
+                assert case_page.locator('link[rel="canonical"]').get_attribute('href') == 'https://coolcode.ca/renewalbench/monthly-prepayments.html'
+                assert case_page.locator('h1').inner_text() in case_page.title()
+                assert case_page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
                 browser.close()
             print('Browser checks passed: quotes, validation, lumps, save/load, JSON/CSV/report, safe text, all mobile views')
         finally:

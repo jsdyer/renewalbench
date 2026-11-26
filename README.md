@@ -96,3 +96,7 @@ For release, the hub imports `tool.json` and the marked guide, regenerates its h
 The **What would a different rate do to my payment?** panel is a separate calculator. Enter the expected balance and remaining amortization at renewal plus your current and assumed next nominal rates. It uses the same verified Canadian semiannual monthly payment formula as the main model. It shows the difference per month and a table of nearby assumed rates. These are hypothetical rates, not lender offers or predictions, and a policy-rate change is never applied automatically.
 
 This panel does not alter workspace offers, project a quoted rate past its term, estimate future balances or calculate hypothetical lifetime interest. Fees, taxes, insurance and lender-specific variable/adjustable payment rules are excluded. Its inputs stay in tab memory and are not part of existing workspace saves or exports. A link to BankRate Lab provides the explicit official decision calendar and observed historical changes. No new API, secret, collector or scheduled workflow is introduced.
+
+## Ready-to-use example
+
+[What Does an Extra $100 per Mortgage Payment Save?](https://coolcode.ca/renewalbench/monthly-prepayments.html) opens this scenario in the same tool. Compare two examples of the same $400,000 fixed-rate mortgage. The second adds $100 to every monthly payment. Inspect the interest paid and balance owing after three years, then enter your own terms and permitted prepayments.
