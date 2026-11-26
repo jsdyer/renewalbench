@@ -33,6 +33,11 @@ def main():
                 page.goto(f'http://127.0.0.1:{server.server_port}/renewalbench/')
                 expect(page.locator('#results')).to_be_visible()
                 assert page.locator('#comparison-table tbody tr').count() == 2
+                page.locator('[name=scenarioNewRate]').fill('6')
+                expect(page.locator('#rate-scenario-result')).to_be_hidden()
+                page.get_by_role('button',name='Calculate payment scenario',exact=True).click()
+                expect(page.locator('#rate-scenario-result')).to_be_visible()
+                expect(page.locator('#rate-difference')).to_contain_text('+')
                 assert page.evaluate("localStorage.getItem('coolcode:renewalbench:workspace')") is None
                 page.locator('[name=horizonMonths]').fill('48')
                 expect(page.locator('#results')).to_be_hidden()

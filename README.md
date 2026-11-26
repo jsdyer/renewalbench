@@ -3,7 +3,7 @@
 [Open Renewal Bench](https://coolcode.ca/renewalbench/) — a private Canadian fixed-rate mortgage renewal workspace. Enter up to eight written offers and compare payments, interest, fees and debt remaining on the **same date**. There are no live lender rates, accounts, API keys, data collectors or scheduled refreshes.
 
 <!-- coolcode:guide -->
-Compare written fixed-rate offers over a period no longer than the shortest term. The editable example compares a $400,000 mortgage over 36 months, with different rates and upfront fees; those offers are invented. Include your own fees and lender-quoted penalties, then inspect both borrowing cost and the amount owing. Dated lump sums apply to every offer; recurring extras and contract limits are set per offer. Save deliberately on your device or export a private JSON workspace, schedule CSV and text report.
+Compare written fixed-rate offers over a period no longer than the shortest term. The editable example compares a $400,000 mortgage over 36 months, with different rates and upfront fees; those offers are invented. Include your own fees and lender-quoted penalties, then inspect both borrowing cost and the amount owing. Dated lump sums apply to every offer; recurring extras and contract limits are set per offer. Save deliberately on your device or export a private JSON workspace, schedule CSV and text report. A separate payment-scenario panel compares your own assumed current/renewal rates at the same balance and amortization without changing any written offer.
 <!-- /coolcode:guide -->
 
 ## Use your own offers
@@ -90,3 +90,9 @@ The editable starting scenario is `web/data/example.json`. Change its balance, d
 Payment formulas, bounds and calendar conventions live in `web/model.mjs`; UI bindings live in `web/app.mjs`. If a new convention is added, keep it explicit in saved inputs, schedules, reports, tests and this README rather than changing a result silently. Add a model test and a browser flow for any new feature. Run the commands above, commit and push to `main`; there is no data-fetch workflow to run and no API key/secret to set.
 
 For release, the hub imports `tool.json` and the marked guide, regenerates its homepage/README, Worker registration and sitemap, and reconciles repository audit and live-page probes. Follow the [CoolCode lifecycle](https://github.com/jsdyer/jsdyer.github.io/blob/main/docs/tool-lifecycle.md). There is **no collector or freshness schedule** to register with the watchdog for this app; its ordinary public-page probe still belongs in hub integration. Template helper scripts remain for future maintenance but are not active scheduled jobs.
+
+## Separate payment-rate scenarios
+
+The **What would a different rate do to my payment?** panel is a separate calculator. Enter the expected balance and remaining amortization at renewal plus your current and assumed next nominal rates. It uses the same verified Canadian semiannual monthly payment formula as the main model. It shows the difference per month and a table of nearby assumed rates. These are hypothetical rates, not lender offers or predictions, and a policy-rate change is never applied automatically.
+
+This panel does not alter workspace offers, project a quoted rate past its term, estimate future balances or calculate hypothetical lifetime interest. Fees, taxes, insurance and lender-specific variable/adjustable payment rules are excluded. Its inputs stay in tab memory and are not part of existing workspace saves or exports. A link to BankRate Lab provides the explicit official decision calendar and observed historical changes. No new API, secret, collector or scheduled workflow is introduced.
